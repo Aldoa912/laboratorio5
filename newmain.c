@@ -28,14 +28,16 @@
 
 #define _XTAL_FREQ 500000
 
-uint8_t ADC;
+int ADC;
+int serv;
 void setup(void);
 void setupINTOSC(void);
 void setupADC(void);
 void setupPWM(void);
+void servo(int valor);
 
 
-unsigned int i = 0;
+
 //******************************************************************************
 // CÃ³digo Principal
 //******************************************************************************
@@ -55,14 +57,18 @@ void main(void) {
         }
         ADIF = 0;           // apago la bandera
         ADC = ADRESH;
-
-            CCPR1L = (ADC/32)+16;
-            __delay_ms(10);
+        servo (ADC);
+            CCPR1L = serv;
+            __delay_us(100);
         
     
         
     }
     return;
+}
+
+void servo(int valor){
+    serv = (7 +((float)(16/255))*(valor-0));
 }
 //******************************************************************************
 // FunciÃ³n para configurar GPIOs
@@ -71,6 +77,7 @@ void setup(void){
     ANSELH = 0;
     TRISB = 0;
     PORTB = 0;
+    PORTC = 0;
 }
 //******************************************************************************
 // FunciÃ³n para configurar PWM
