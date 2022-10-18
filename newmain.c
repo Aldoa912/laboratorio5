@@ -68,7 +68,7 @@ void main(void) {
 }
 
 void servo(int valor){
-    serv = (7 +((float)(16/255))*(valor-0));
+    serv = (unsigned short) (7+( (float)(13)/(255) ) * (valor-0));
 }
 //******************************************************************************
 // FunciÃ³n para configurar GPIOs
