@@ -125,27 +125,39 @@ void setupADC(void){
 // FunciÃ³n para configurar PWM
 //******************************************************************************
 void setupPWM(void){
-    // Paso 1
-    TRISCbits.TRISC2 = 1;
+ 
+    // **********************************************************
     
-    // Paso 2
-    PR2 = 155;      // Periodo de 20mS
+    TRISCbits.TRISC2 = 1;           //
+    TRISCbits.TRISC1 = 1;           //
     
-    // Paso 3
-    CCP1CON = 0b00001100;        // P1A como PWM 
-            
-   // Paso 4
-    CCP1CONbits.DC1B = 0b11;        // CCPxCON<5:4>
-    CCPR1L = 11;        // CCPR1L 
-                        // CALCULO PARA 1.5mS de ancho de pulso
+    PR2 = 255;                      // Periodo de 20ms
     
-    // Paso 5
+    CCP1CONbits.P1M = 0b00;         //
+    
+    
+    CCP1CONbits.CCP1M = 0b1100;     //
+
+    
+    CCP2CONbits.CCP2M = 0b1111;     //
+    
+    //Calculos para 1.5ms de ancho de pulso
+    CCP1CONbits.DC1B = 0b11;        //CCPxCON<5:4>
+    CCPR1L = 11;                    //CCPR1L
+    
+    
+    CCP2CONbits.DC2B1 = 0b1;        //CCPxCON<5:4>
+    CCP2CONbits.DC2B0 = 0b1;
+    CCPR2L = 11;                    //CCPR2L
+    
+    //Configutación del TMR2
     TMR2IF = 0;
-    T2CONbits.T2CKPS = 0b11;      // Prescaler de 1:16
-    TMR2ON = 1;         // Encender timer 2
+    T2CONbits.T2CKPS = 0b11;        //Preescaler de 1:16
+    T2CONbits.TMR2ON = 1;           //Se habilita TMR2
     
-    // Paso 6
-    while(!TMR2IF);
-    TRISCbits.TRISC2 = 0;   // Habilitamos la salida del PWM
-    
+    while(!PIR1bits.TMR2IF){       
+        ;
+    }
+    TRISCbits.TRISC2=0;             //Habilitamos la salida del PWM.
+    TRISCbits.TRISC1=0;             //Habilitamos la salida del PWM.
 }
