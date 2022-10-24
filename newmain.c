@@ -93,8 +93,14 @@ void setupADC(void){
     
     // Paso 1 Seleccionar puerto de entrada
     //TRISAbits.TRISA0 = 1;
-    TRISA = TRISA | 0x01;
-    ANSEL = ANSEL | 0x01;
+    TRISAbits.TRISA1 = 1;
+    ANSELbits.ANS1 = 1; 
+    
+    TRISAbits.TRISA2 = 1; 
+    ANSELbits.ANS2 = 1; 
+    
+    TRISAbits.TRISA3 = 1;
+    ANSELbits.ANS3 = 1; 
     
     // Paso 2 Configurar mÃ³dulo ADC
     
@@ -105,11 +111,11 @@ void setupADC(void){
     ADCON1bits.VCFG0 = 0;       // Ref VDD
     
     ADCON1bits.ADFM = 0;        // Justificado hacia izquierda
-    
-    ADCON0bits.CHS3 = 0;
-    ADCON0bits.CHS2 = 0;
-    ADCON0bits.CHS1 = 0;
-    ADCON0bits.CHS0 = 0;        // Canal AN0
+        
+    //Canal
+    ADCON0bits.CHS = 0b0001;        // Canal AN1
+    ADCON0bits.CHS = 0b0010;       // Canal AN2
+    ADCON0bits.CHS = 0b0011;
     
     ADCON0bits.ADON = 1;        // Habilitamos el ADC
     __delay_us(100);
