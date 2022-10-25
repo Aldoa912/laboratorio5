@@ -191,13 +191,13 @@ void setupPWM(void){
     
     PR2 = 155;                      // Periodo de 20ms
     
-    CCP1CONbits.P1M = 0b00;         //
+    CCP1CONbits.P1M = 0b00;         
     
     
-    CCP1CONbits.CCP1M = 0b1100;     //
+    CCP1CONbits.CCP1M = 0b1100;     
 
     
-    CCP2CONbits.CCP2M = 0b1111;     //
+    CCP2CONbits.CCP2M = 0b1111;     
     
     //Calculos para 1.5ms de ancho de pulso
     CCP1CONbits.DC1B = 0b11;        //CCPxCON<5:4>
