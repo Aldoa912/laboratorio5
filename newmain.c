@@ -26,8 +26,8 @@
 
 #include <xc.h>
 
-#define _XTAL_FREQ 500000
-#define tmr0_value 241
+#define _XTAL_FREQ 500000      // Frecuencia interna del PIC
+#define tmr0_value 241         // tiempo con el que se cargara el timer 0
 
 int ADC;
 int serv;
@@ -42,21 +42,23 @@ void servo(int valor);
 
 
 void __interrupt() isr (void){
-    if(INTCONbits.T0IF){
-        cuenta++;
+    if(INTCONbits.T0IF){        //Se revisa la bandera del timer0
+        cuenta++;               // cada vez se aumenta la variable cuenta
         if(cuenta <= ADC3){
-            PORTDbits.RD0 = 1;
+            PORTDbits.RD0 = 1;  // cuando cuenta sea mayor que ADC3 se enciente
+                                // la led
         }
         else{
-            PORTDbits.RD0 = 0;
+            PORTDbits.RD0 = 0;  // de lo contrario se apaga
         }
         TMR0 = tmr0_value;
-        INTCONbits.T0IF = 0;
+        INTCONbits.T0IF = 0;    // se apaga la bandera y se carga de nuevo el
+                                // valor al timer
     }
     
-    if (PIR1bits.ADIF){
-        PORTDbits.RD0 = 1;
-        PIR1bits.ADIF = 0;
+    if (PIR1bits.ADIF){         // se revisa la bandera del ADC
+        PORTDbits.RD0 = 1;      // si esta encendida se enciende el puerto
+        PIR1bits.ADIF = 0;      // se apaga la bandera
     }
 }
 //******************************************************************************
@@ -72,32 +74,32 @@ void main(void) {
 //******************************************************************************
 // ADC
 //******************************************************************************
-        ADCON0bits.CHS = 0b0000;
+        ADCON0bits.CHS = 0b0000;        // usamos el canal 0
         __delay_us(100);
         ADCON0bits.GO = 1;  // enciendo la bandera
         while(ADCON0bits.GO == 1){
             ;
         }
         ADIF = 0;           // apago la bandera
-        ADC = ADRESH;
-        servo (ADC);
-            CCPR1L = serv;
+        ADC = ADRESH;       // cargo el valor a ADC
+        servo (ADC);        // llamo a la funcion e ingreso el valor de ADC
+            CCPR1L = serv;  // cargo el valor de la conversion a CCPR1L
             __delay_us(100);
             
-        ADCON0bits.CHS = 0b0001;
+        ADCON0bits.CHS = 0b0001; // usamos el canal 1
         __delay_us(100);
         ADCON0bits.GO = 1;  // enciendo la bandera
         while(ADCON0bits.GO == 1){
             ;
         }
         ADIF = 0;           // apago la bandera
-        ADC2 = ADRESH;
-        servo (ADC2);
-            CCPR2L = serv;
+        ADC2 = ADRESH;      // cargo el valor a ADC2
+        servo (ADC2);       // llamo a la funcion e ingreso el valor de ADC2
+            CCPR2L = serv;  // cargo el valor de la conversion a CCPR2L
             __delay_us(100);
             
-        ADCON0bits.CHS = 0b0010;
-        __delay_us(100);
+        ADCON0bits.CHS = 0b0010;    // usamos el canal 2
+        __delay_us(100);    // cargo el valor a ADC3
         ADCON0bits.GO = 1;  // enciendo la bandera
         while(ADCON0bits.GO == 1){
             ;
@@ -111,6 +113,7 @@ void main(void) {
 
 void servo(int valor){
     serv = (unsigned short) (7+( (float)(13)/(255) ) * (valor-0));
+    // realizo la conversion para el servomotor
 }
 //******************************************************************************
 // FunciÃ³n para configurar GPIOs
@@ -121,7 +124,8 @@ void setup(void){
     PORTB = 0;
     PORTC = 0;
     PORTD = 0;
-    TRISDbits.TRISD0 = 1;
+    cuenta = 0;
+    TRISDbits.TRISD0 = 0;       // inicializo todos los puertos
 }
 //******************************************************************************
 // FunciÃ³n para configurar PWM
@@ -129,11 +133,11 @@ void setup(void){
 void setupINTOSC(void){
     OSCCONbits.IRCF = 0b011;       // 500 KHz
     OSCCONbits.SCS = 1;
-    INTCONbits.GIE = 1;
-    INTCONbits.TMR0IE = 1;
-    INTCONbits.T0IF = 0;
-    PIE1bits.ADIE = 1;
-    PIR1bits.ADIF = 0;
+    INTCONbits.GIE = 1;             
+    INTCONbits.TMR0IE = 1;          // activo la interrupcion del timer0
+    INTCONbits.T0IF = 0;            // apago la bandera del timer0
+    PIE1bits.ADIE = 1;              // activo la interrupcion del ADC
+    PIR1bits.ADIF = 0;              // apago la bandera
     
     OPTION_REGbits.T0CS = 0;
     OPTION_REGbits.PSA = 0;
@@ -147,7 +151,6 @@ void setupINTOSC(void){
 void setupADC(void){
     
     // Paso 1 Seleccionar puerto de entrada
-    //TRISAbits.TRISA0 = 1;
     TRISAbits.TRISA0 = 1;
     ANSELbits.ANS0 = 1; 
     
@@ -183,8 +186,8 @@ void setupPWM(void){
  
     // **********************************************************
     
-    TRISCbits.TRISC2 = 1;           //
-    TRISCbits.TRISC1 = 1;           //
+    TRISCbits.TRISC2 = 1;           //encendemos el puerto del PWM
+    TRISCbits.TRISC1 = 1;           //encendemos el puerto del PWM
     
     PR2 = 155;                      // Periodo de 20ms
     
