@@ -27,6 +27,7 @@
 #include <xc.h>
 
 #define _XTAL_FREQ 500000
+#define tmr0_value 241
 
 int ADC;
 int serv;
@@ -97,6 +98,18 @@ void setup(void){
 void setupINTOSC(void){
     OSCCONbits.IRCF = 0b011;       // 500 KHz
     OSCCONbits.SCS = 1;
+    TRISDbits.TRISD0 = 1;
+    INTCONbits.GIE = 1;
+    INTCONbits.TMR0IE = 1;
+    INTCONbits.T0IF = 0;
+    PIE1bits.ADIE = 1;
+    PIR1bits.ADIF = 0;
+    
+    OPTION_REGbits.T0CS = 0;
+    OPTION_REGbits.PSA = 0;
+    OPTION_REGbits.PS = 0B011;
+    
+    TMR0 = tmr0_value;
 }
 //******************************************************************************
 // FunciÃ³n para configurar ADC
