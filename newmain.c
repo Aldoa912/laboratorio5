@@ -30,6 +30,7 @@
 
 int ADC;
 int serv;
+int ADC2;
 void setup(void);
 void setupINTOSC(void);
 void setupADC(void);
@@ -60,7 +61,15 @@ void main(void) {
         servo (ADC);
             CCPR1L = serv;
             __delay_us(100);
-        
+        ADCON0bits.GO = 1;  // enciendo la bandera
+        while(ADCON0bits.GO == 1){
+            ;
+        }
+        ADIF = 0;           // apago la bandera
+        ADC2 = ADRESH;
+        servo (ADC2);
+            CCPR2L = serv;
+            __delay_us(100);
     
         
     }
@@ -114,8 +123,8 @@ void setupADC(void){
         
     //Canal
     ADCON0bits.CHS = 0b0001;        // Canal AN1
-    ADCON0bits.CHS = 0b0010;       // Canal AN2
-    ADCON0bits.CHS = 0b0011;
+    //ADCON0bits.CHS = 0b0010;       // Canal AN2
+    //ADCON0bits.CHS = 0b0011;
     
     ADCON0bits.ADON = 1;        // Habilitamos el ADC
     __delay_us(100);
