@@ -33,6 +33,7 @@ int ADC;
 int serv;
 int ADC2;
 int ADC3;
+int cuenta;
 void setup(void);
 void setupINTOSC(void);
 void setupADC(void);
@@ -40,7 +41,24 @@ void setupPWM(void);
 void servo(int valor);
 
 
-
+void __interrupt() isr (void){
+    if(INTCONbits.T0IF){
+        cuenta++;
+        if(cuenta <= ADC3){
+            PORTDbits.RD0 = 1;
+        }
+        else{
+            PORTDbits.RD0 = 0;
+        }
+        TMR0 = tmr0_value;
+        INTCONbits.T0IF = 0;
+    }
+    
+    if (PIR1bits.ADIF){
+        PORTDbits.RD0 = 1;
+        PIR1bits.ADIF = 0;
+    }
+}
 //******************************************************************************
 // CÃ³digo Principal
 //******************************************************************************
@@ -55,6 +73,7 @@ void main(void) {
 // ADC
 //******************************************************************************
         ADCON0bits.CHS = 0b0000;
+        __delay_us(100);
         ADCON0bits.GO = 1;  // enciendo la bandera
         while(ADCON0bits.GO == 1){
             ;
@@ -64,7 +83,9 @@ void main(void) {
         servo (ADC);
             CCPR1L = serv;
             __delay_us(100);
+            
         ADCON0bits.CHS = 0b0001;
+        __delay_us(100);
         ADCON0bits.GO = 1;  // enciendo la bandera
         while(ADCON0bits.GO == 1){
             ;
@@ -74,7 +95,15 @@ void main(void) {
         servo (ADC2);
             CCPR2L = serv;
             __delay_us(100);
-    
+            
+        ADCON0bits.CHS = 0b0010;
+        __delay_us(100);
+        ADCON0bits.GO = 1;  // enciendo la bandera
+        while(ADCON0bits.GO == 1){
+            ;
+        }
+        ADIF = 0;           // apago la bandera
+        ADC3 = ADRESH;
         
     }
     return;
@@ -91,6 +120,8 @@ void setup(void){
     TRISB = 0;
     PORTB = 0;
     PORTC = 0;
+    PORTD = 0;
+    TRISDbits.TRISD0 = 1;
 }
 //******************************************************************************
 // FunciÃ³n para configurar PWM
@@ -98,7 +129,6 @@ void setup(void){
 void setupINTOSC(void){
     OSCCONbits.IRCF = 0b011;       // 500 KHz
     OSCCONbits.SCS = 1;
-    TRISDbits.TRISD0 = 1;
     INTCONbits.GIE = 1;
     INTCONbits.TMR0IE = 1;
     INTCONbits.T0IF = 0;
@@ -107,7 +137,7 @@ void setupINTOSC(void){
     
     OPTION_REGbits.T0CS = 0;
     OPTION_REGbits.PSA = 0;
-    OPTION_REGbits.PS = 0B011;
+    OPTION_REGbits.PS = 0b011;
     
     TMR0 = tmr0_value;
 }
