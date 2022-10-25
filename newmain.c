@@ -52,6 +52,7 @@ void main(void) {
 //******************************************************************************
 // ADC
 //******************************************************************************
+        ADCON0bits.CHS = 0b0000;
         ADCON0bits.GO = 1;  // enciendo la bandera
         while(ADCON0bits.GO == 1){
             ;
@@ -61,6 +62,7 @@ void main(void) {
         servo (ADC);
             CCPR1L = serv;
             __delay_us(100);
+        ADCON0bits.CHS = 0b0001;
         ADCON0bits.GO = 1;  // enciendo la bandera
         while(ADCON0bits.GO == 1){
             ;
@@ -102,14 +104,14 @@ void setupADC(void){
     
     // Paso 1 Seleccionar puerto de entrada
     //TRISAbits.TRISA0 = 1;
-    TRISAbits.TRISA1 = 1;
+    TRISAbits.TRISA0 = 1;
+    ANSELbits.ANS0 = 1; 
+    
+    TRISAbits.TRISA1 = 1; 
     ANSELbits.ANS1 = 1; 
     
-    TRISAbits.TRISA2 = 1; 
+    TRISAbits.TRISA2 = 1;
     ANSELbits.ANS2 = 1; 
-    
-    TRISAbits.TRISA3 = 1;
-    ANSELbits.ANS3 = 1; 
     
     // Paso 2 Configurar mÃ³dulo ADC
     
@@ -122,7 +124,7 @@ void setupADC(void){
     ADCON1bits.ADFM = 0;        // Justificado hacia izquierda
         
     //Canal
-    ADCON0bits.CHS = 0b0001;        // Canal AN1
+    ADCON0bits.CHS = 0b0000;        // Canal AN1
     //ADCON0bits.CHS = 0b0010;       // Canal AN2
     //ADCON0bits.CHS = 0b0011;
     
@@ -140,7 +142,7 @@ void setupPWM(void){
     TRISCbits.TRISC2 = 1;           //
     TRISCbits.TRISC1 = 1;           //
     
-    PR2 = 255;                      // Periodo de 20ms
+    PR2 = 155;                      // Periodo de 20ms
     
     CCP1CONbits.P1M = 0b00;         //
     
