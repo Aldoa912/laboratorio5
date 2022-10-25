@@ -31,6 +31,7 @@
 int ADC;
 int serv;
 int ADC2;
+int ADC3;
 void setup(void);
 void setupINTOSC(void);
 void setupADC(void);
